@@ -35,34 +35,36 @@ export default {
       }),
       commonjs(),
 
-      babel({
-        extensions: [".js", ".mjs", ".html", ".svelte"],
-        plugins: [
-          "@babel/plugin-proposal-object-rest-spread",
-          "@babel/plugin-syntax-dynamic-import"
-        ]
-      }),
-
-      legacy &&
-        babel({
-          extensions: [".js", ".mjs", ".html", ".svelte"],
-          exclude: [
-            "node_modules/@babel/**",
-            "node_modules/core-js/**",
-            "node_modules/core-js-pure/**"
-          ],
-          presets: [
-            [
-              "@babel/preset-env",
-              {
-                corejs: 3,
-                useBuiltIns: "usage",
-                targets: "ie >= 11"
-              }
+      !legacy
+        ? // When we're not dealing with a legacy build MS Edge requires the
+          // object-rest-spread plugin to work.
+          babel({
+            extensions: [".js", ".mjs", ".html", ".svelte"],
+            plugins: [
+              "@babel/plugin-proposal-object-rest-spread",
+              "@babel/plugin-syntax-dynamic-import"
             ]
-          ],
-          plugins: ["@babel/plugin-syntax-dynamic-import"]
-        }),
+          })
+        : // Legacy browsers (IE11) require some more transforms and polyfills
+          babel({
+            extensions: [".js", ".mjs", ".html", ".svelte"],
+            exclude: [
+              "node_modules/@babel/**",
+              "node_modules/core-js/**",
+              "node_modules/core-js-pure/**"
+            ],
+            presets: [
+              [
+                "@babel/preset-env",
+                {
+                  corejs: 3,
+                  useBuiltIns: "usage",
+                  targets: "ie >= 11"
+                }
+              ]
+            ],
+            plugins: ["@babel/plugin-syntax-dynamic-import"]
+          }),
 
       !dev &&
         terser({
