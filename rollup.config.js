@@ -35,10 +35,17 @@ export default {
       }),
       commonjs(),
 
+      babel({
+        extensions: [".js", ".mjs", ".html", ".svelte"],
+        plugins: [
+          "@babel/plugin-proposal-object-rest-spread",
+          "@babel/plugin-syntax-dynamic-import"
+        ]
+      }),
+
       legacy &&
         babel({
           extensions: [".js", ".mjs", ".html", ".svelte"],
-          runtimeHelpers: true,
           exclude: [
             "node_modules/@babel/**",
             "node_modules/core-js/**",
@@ -50,20 +57,11 @@ export default {
               {
                 corejs: 3,
                 useBuiltIns: "usage",
-                targets: "> 0.25%, ie >= 11, not dead"
+                targets: "ie >= 11"
               }
             ]
           ],
-          plugins: [
-            "@babel/plugin-syntax-dynamic-import",
-            [
-              "@babel/plugin-transform-runtime",
-              {
-                corejs: 3,
-                useESModules: true
-              }
-            ]
-          ]
+          plugins: ["@babel/plugin-syntax-dynamic-import"]
         }),
 
       !dev &&
